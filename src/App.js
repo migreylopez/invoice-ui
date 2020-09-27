@@ -28,7 +28,7 @@ function App() {
   return (
     <Container fluid>
       <Button onClick={() => setAddInvoiceModalShow(true)}>Add new</Button>
-      <InvoiceList invoices={invoices} />
+      <InvoiceList invoices={invoices} setInvoices={setInvoices} />
       <AddInvoiceModal setInvoices={setInvoices} show={addInvoiceModalShow} onHide={() => setAddInvoiceModalShow(false)} />
       {invoicesLoaded === false ? <Spinner animation="border" role="status"><span className="sr-only">Loading...</span></Spinner> : null}
     </Container>

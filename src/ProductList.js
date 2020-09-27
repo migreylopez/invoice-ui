@@ -18,16 +18,16 @@ function ProductRow({product, sku, name, quantity, price}) {
         <Form.Group>
             <Form.Row>
                 <Col>
-                    <Form.Control ref={sku} value={product.sku} placeholder="Sku" />
+                    <Form.Control ref={sku} defaultValue={product.sku} placeholder="Sku" />
                 </Col>
                 <Col>
-                    <Form.Control ref={name} value={product.name} placeholder="Name" />
+                    <Form.Control ref={name} defaultValue={product.name} placeholder="Name" />
                 </Col>
                 <Col>
-                    <Form.Control ref={quantity} value={product.quantity} placeholder="Quantity" />
+                    <Form.Control ref={quantity} defaultValue={product.quantity} placeholder="Quantity" />
                 </Col>
                 <Col>
-                    <Form.Control ref={price} value={product.price} placeholder="Price" />
+                    <Form.Control ref={price} defaultValue={product.price} placeholder="Price" />
                 </Col>
             </Form.Row>
         </Form.Group>

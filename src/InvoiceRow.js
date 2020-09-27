@@ -1,14 +1,18 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 
-export default function InvoiceList({invoice}) {
+export default function InvoiceRow({setInvoices, setEditInvoiceModalShow, invoice, setInvoiceToEdit}) {
 
     function edit() {
-
+        setInvoiceToEdit(invoice)
+        setEditInvoiceModalShow(true)
     }
 
     function remove() {
-        
+        // TODO: CALL TO THE BACKEND!
+        setInvoices(prevInvoices => {
+            return prevInvoices.filter(prevInvoice => prevInvoice.id !== invoice.id)
+        })
     }
 
     return (

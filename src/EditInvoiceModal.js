@@ -1,9 +1,13 @@
-import React, { useState, useRef, createRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Modal, Button, Form, Col } from 'react-bootstrap'
 import ProductList from './ProductList'
 
 export default function EditInvoiceModal({ invoice, setInvoices, show, onHide }) {
-    const [products, setProducts] = useState(...invoice.products)
+    const [products, setProducts] = useState(invoice.products)
+
+    useEffect(() => {
+        setProducts(invoice.products)
+    }, [invoice.products])
 
     const productSkus = useRef([]),
         productNames = useRef([]),
@@ -25,6 +29,8 @@ export default function EditInvoiceModal({ invoice, setInvoices, show, onHide })
             }
         })
         const updatedInvoice = {
+            "id": invoice.id,
+            "created": invoice.created,
             "currency": currency.current.value,
             "customer": {
                 "id": customerId.current.value,
@@ -34,16 +40,20 @@ export default function EditInvoiceModal({ invoice, setInvoices, show, onHide })
             "products": [...updatedProducts]
         }
         persistUpdatedInvoice(updatedInvoice)
-            .then(persistedInvoice => {
-                setInvoices(prevInvoices => {
-                    return [...prevInvoices, persistedInvoice]
-                })
+            .then(statusCode => {
+                if (statusCode === 204) {
+                    setInvoices(prevInvoices => {
+                        return prevInvoices.map(invoice => {
+                            return invoice.id === updatedInvoice.id ? updatedInvoice : invoice
+                        })
+                    })
+                } else {
+                    console.log(statusCode)
+                    alert("Error saving updated invoice")
+                }
             })
         onHide()
     }
-
-    // TODO: Initialize the values from the {invoice} in the form controls
-    // Call the Edit modal onClick in the Edit button passing the invoice in question
 
     return (
         <Modal
@@ -64,17 +74,17 @@ export default function EditInvoiceModal({ invoice, setInvoices, show, onHide })
                     <Form.Row>
                         <Form.Group as={Col}>
                             <Form.Label>Id</Form.Label>
-                            <Form.Control ref={customerId} value={invoice.id} placeholder="55a59524-c623-4204-9465-7d16c80a9401" />
+                            <Form.Control ref={customerId} defaultValue={invoice.customer.id} placeholder="55a59524-c623-4204-9465-7d16c80a9401" />
                         </Form.Group>
 
                         <Form.Group as={Col}>
                             <Form.Label>Name</Form.Label>
-                            <Form.Control ref={customerName} placeholder="Jane Doe" />
+                            <Form.Control ref={customerName} defaultValue={invoice.customer.name} placeholder="Jane Doe" />
                         </Form.Group>
 
                         <Form.Group as={Col}>
                             <Form.Label>Address</Form.Label>
-                            <Form.Control ref={customerAddress} placeholder="Staroměstské nám. 1" />
+                            <Form.Control ref={customerAddress} defaultValue={invoice.customer.address} placeholder="Staroměstské nám. 1" />
                         </Form.Group>
                     </Form.Row>
                 </fieldset>
@@ -83,9 +93,9 @@ export default function EditInvoiceModal({ invoice, setInvoices, show, onHide })
 
                     <Form.Group>
                         <Form.Label>Currency</Form.Label>
-                        <Form.Control ref={currency} placeholder="EUR" />
+                        <Form.Control ref={currency} defaultValue={invoice.currency} placeholder="EUR" />
                     </Form.Group>
-
+                    
                     <ProductList products={products} skus={productSkus} names={productNames} quantities={productQuantities} prices={productPrices} />
                 </fieldset>
             </Modal.Body>
@@ -105,5 +115,5 @@ async function persistUpdatedInvoice(invoice) {
         body: JSON.stringify(invoice)
     };
     const response = await fetch('http://localhost:8080/api/v0/edit', requestOptions)
-    return await response.json()
+    return await response.status
 }
