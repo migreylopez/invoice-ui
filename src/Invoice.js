@@ -1,5 +1,5 @@
-export default function Invoice({invoice}) {
-    return (
-        invoice.id
-    );
+export default function Invoice({ invoice }) {
+	return (
+		invoice.id
+	);
 };
